@@ -1,0 +1,31 @@
+Package: microbiomeTrajectory
+Title: Microbiome age trajectory analysis
+Version: 0.0.0.9000
+Authors@R: 
+    person("Paula", "Rodriguez-Garcia", , "p.rodriguezgar@hotmail.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0009-0007-4606-3858"))
+Description: Analyse microbiota age trajectories
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    broom,
+    CATT,
+    dplyr,
+    effsize,
+    exactRankTests,
+    ggplot2,
+    glue,
+    Kendall,
+    magrittr,
+    patchwork,
+    purrr,
+    scales,
+    splinectomeR,
+    stringi,
+    stringr,
+    survival,
+    survminer,
+    tibble,
+    tidyr
