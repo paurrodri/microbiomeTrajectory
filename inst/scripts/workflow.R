@@ -34,7 +34,7 @@ on_off_trajectory_data <- define_on_off_trajectory(maz_data)
 
 # Trajectory and trajectory comparison figures ---------------------------------
 figure_trajectories <- plot_trajectories(microbiota_age_data, filter_expression)
-figure_pvals        <- compare_trajectories_sliding_window(microbiota_age_data, filter_expression)
+figure_pvals        <- compare_trajectories_between_groups(microbiota_age_data, filter_expression)
 figure_distance     <- calculate_distance_between_trajectories(microbiota_age_data, filter_expression)
 
 
