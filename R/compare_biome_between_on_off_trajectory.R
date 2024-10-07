@@ -97,7 +97,7 @@ compare_biome_between_on_off_trajectory <- function(
         FDR < 1 ~ "Non-significant",
       ),
       Item_higher_in = factor(Item_higher_in,
-                              levels = c(levels(data_visit[['Trajectory_status']]),
+                              levels = c(levels(data[['Trajectory_status']]),
                                          'Non-significant'))
     )
 
