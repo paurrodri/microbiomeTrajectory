@@ -34,7 +34,7 @@ plot_kaplan_meier_all_combinations <- function(
 
   combinations <- tibble::tibble(
     trajectory_status_variable = list(
-      'Trajectory_status_per_subject_survival',
+      'Trajectory_status_per_subject',
       'Trajectory_status_3_months',
       'Trajectory_status_12_months'),
     time_limits = list(
@@ -47,7 +47,7 @@ plot_kaplan_meier_all_combinations <- function(
     combinations,
     function(trajectory_status_variable, time_limits){
 
-      if (trajectory_status_variable == "Trajectory_status_per_subject_survival"){
+      if (trajectory_status_variable == "Trajectory_status_per_subject"){
         legend_title <- "Trajectory overall"
       } else if (trajectory_status_variable == "Trajectory_status_3_months"){
         legend_title <- "Trajectory at 3 months"

@@ -100,20 +100,17 @@ define_on_off_trajectory <- function(
     dplyr::group_by(Subject_ID) %>%
     dplyr::summarise(
       num_samples = dplyr::n(),
-    # Used in the trajectory status vs feeding group comparison
-    # If any sample is off-trajectory, then subject is off-trajectory
-    # If all samples are on-trajectory, then subject is on-trajectory
       Trajectory_status_per_subject = dplyr::if_else(
         any(Trajectory_status_per_sample == "Off-trajectory"),
         "Off-trajectory",
         "On-trajectory")
     ) %>%
-    # Used in survival analysis
+    # Modification of overall trajectory status
     # If any sample is off-trajectory, then subject is off-trajectory
     # If all samples are on-trajectory AND zero or one sample is missing, then subject is on-trajectory
     # If all samples are on-trajectory AND more than one sample is missing, then subject is excluded (NA)
     dplyr::mutate(
-      Trajectory_status_per_subject_survival = dplyr::case_when(
+      Trajectory_status_per_subject = dplyr::case_when(
         Trajectory_status_per_subject == "Off-trajectory" ~ "Off-trajectory",
         num_samples >= length(c(early_visits, late_visits)) - 1 ~ "On-trajectory",
         TRUE ~ NA
@@ -121,15 +118,11 @@ define_on_off_trajectory <- function(
     dplyr::mutate(
       Trajectory_status_per_subject = factor(
         Trajectory_status_per_subject,
-        levels = c('On-trajectory', 'Off-trajectory')),
-      Trajectory_status_per_subject_survival = factor(
-        Trajectory_status_per_subject_survival,
         levels = c('On-trajectory', 'Off-trajectory'))
     ) %>%
     dplyr::select(
       Subject_ID,
-      Trajectory_status_per_subject,
-      Trajectory_status_per_subject_survival)
+      Trajectory_status_per_subject)
 
   on_off_trajectory_data <-
     on_off_trajectory_data_per_sample %>%

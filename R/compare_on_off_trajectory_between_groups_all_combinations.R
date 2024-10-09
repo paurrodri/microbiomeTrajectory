@@ -26,7 +26,7 @@ compare_on_off_trajectory_between_groups_all_combinations <- function(
     trajectory_status_variable = c(
       'Trajectory_status_early_visits',
       'Trajectory_status_late_visits',
-      'Trajectory_status_per_subject'), # _survival
+      'Trajectory_status_per_subject'),
     trend = c('CG-TG-HMG', 'TG-CG-HMG')
   )
 

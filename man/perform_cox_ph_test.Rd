@@ -8,7 +8,7 @@ perform_cox_ph_test(
   event_data,
   on_off_trajectory_data,
   filter_expression = expression(Feeding_group != "HMG"),
-  trajectory_status_variable = "Trajectory_status_per_subject_survival",
+  trajectory_status_variable = "Trajectory_status_per_subject",
   time_limits = c(1 * 30, 15 * 30),
   covariates = c("Feeding_group", "Delivery_mode", "Sex")
 )

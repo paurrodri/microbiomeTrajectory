@@ -25,8 +25,8 @@ perform_cox_ph_test_all_combinations <- function(
 
   combinations_cox_ph <- tibble::tibble(
     trajectory_status_variable = list(
-      'Trajectory_status_per_subject_survival',
-      'Trajectory_status_per_subject_survival',
+      'Trajectory_status_per_subject',
+      'Trajectory_status_per_subject',
       'Trajectory_status_3_months',
       'Trajectory_status_3_months',
       'Trajectory_status_12_months',

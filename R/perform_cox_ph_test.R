@@ -21,7 +21,7 @@ perform_cox_ph_test <- function(
   event_data, # antibiotics # rti_mild
   on_off_trajectory_data,
   filter_expression = expression(Feeding_group != "HMG"),
-  trajectory_status_variable = "Trajectory_status_per_subject_survival", # "Trajectory_status_per_subject_survival" # "Trajectory_status_3_months" # "Trajectory_status_12_months",,
+  trajectory_status_variable = "Trajectory_status_per_subject", # "Trajectory_status_per_subject" # "Trajectory_status_3_months" # "Trajectory_status_12_months",,
   time_limits = c(1*30, 15*30), # provided in days # c(1*30, 15*30) # c(3*30, 12*30) # c(12*30, 15*30)
   covariates = c("Feeding_group", "Delivery_mode", "Sex") # "" if no covariates (i.e. unadjusted)
 ){
