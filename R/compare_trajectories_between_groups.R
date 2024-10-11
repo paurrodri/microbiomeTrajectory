@@ -98,6 +98,9 @@ compare_trajectories_between_groups <- function(
 
     pval.p$N.norm <- .norm_range(x = pval.p[, 3])
 
+    manual_breaks <- c(1e-7, 1e-6, 1e-4, 0.01, 0.05, 0.1, 1)
+    manual_labels <- c("0.0000001", "0.000001", "0.0001", "0.01", "0.05", "0.1", "1")
+
     if (length(unique(pval.p[, 3])) <= 1) {
       cat("Number of observations per interval is uniform; points will not be plotted.")
     }
@@ -128,8 +131,8 @@ compare_trajectories_between_groups <- function(
       ggplot2::scale_y_continuous(
         limits = axis_limits,
         trans  = scales::log10_trans(),
-        breaks = scales::trans_breaks("log10", function(x) 10^(x)),
-        labels = scales::trans_format("log10", scales::math_format(10^.x))
+        breaks = manual_breaks,
+        labels = manual_labels
       ) +
       ggplot2::theme_bw() +
       ggplot2::theme(
