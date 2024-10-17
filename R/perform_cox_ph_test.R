@@ -26,6 +26,8 @@ perform_cox_ph_test <- function(
   covariates = c("Feeding_group", "Delivery_mode", "Sex") # "" if no covariates (i.e. unadjusted)
 ){
 
+  event_data_name <- deparse(substitute(event_data))
+
   # Prepare data for analysis
   data_test <- event_data %>%
     dplyr::filter(eval(filter_expression)) %>%
@@ -108,6 +110,7 @@ perform_cox_ph_test <- function(
   p_cox_string <- if (p_cox < 0.0001) "p < 0.0001" else glue::glue("p: {round(p_cox, 4)}")
 
   test_results <- tibble::tibble(
+    "Event_data" = event_data_name,
     "Variable" = trajectory_status_variable,
     "n_on" = n_on,
     "n_off" = n_off,
