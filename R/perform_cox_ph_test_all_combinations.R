@@ -23,6 +23,8 @@ perform_cox_ph_test_all_combinations <- function(
   filter_expression = expression(Feeding_group != "HMG")
 ){
 
+  event_data_name <- deparse(substitute(event_data))
+
   combinations_cox_ph <- tibble::tibble(
     trajectory_status_variable = list(
       'Trajectory_status_per_subject',
@@ -147,6 +149,7 @@ perform_cox_ph_test_all_combinations <- function(
 
 
                                test_results <- tibble::tibble(
+                                 "Event_data" = event_data_name,
                                  "Variable" = trajectory_status_variable,
                                  "Followed between" = time_limits_string,
                                  "n_on" = n_on,
