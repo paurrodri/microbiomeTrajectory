@@ -5,6 +5,7 @@
 #' @import magrittr
 #' @import dplyr
 #' @import ggplot2
+#' @import stringr
 #' @import forestploter
 #'
 #' @return Documentation will follow

@@ -7,6 +7,7 @@
 #' @import ggplot2
 #' @import tidyr
 #' @import forcats
+#' @import glue
 #' @import scales
 #' @import stringr
 #'
