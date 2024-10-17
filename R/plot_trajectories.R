@@ -42,75 +42,6 @@ plot_trajectories <- function(
   ymin <- min(plot_data$Microbiota_age)
   ymax <- max(plot_data$Microbiota_age)
 
-
-  custom_theme <- ggplot2::theme(
-    axis.line = ggplot2::element_line(
-      color = "black",
-      linewidth = 0.5,
-      lineend = "square"),
-    axis.text.x = ggplot2::element_text(
-      margin = ggplot2::margin(t = 2),
-      vjust = 1),
-    axis.text.x.top = ggplot2::element_text(
-      margin = ggplot2::margin(b = 2),
-      vjust = 0),
-    axis.text.y = ggplot2::element_text(
-      margin = ggplot2::margin(r = 2),
-      hjust = 1),
-    axis.text.y.right = ggplot2::element_text(
-      margin = ggplot2::margin(l = 2),
-      hjust = 0),
-    axis.ticks.length = ggplot2::unit(5/2, "pt"),
-    axis.title.x = ggplot2::element_text(
-      margin = ggplot2::margin(t = 5/2),
-      vjust = 1),
-    axis.title.x.top = ggplot2::element_text(
-      margin = ggplot2::margin(b = 5/2),
-      vjust = 0),
-    axis.title.y = ggplot2::element_text(
-      angle = 90,
-      margin = ggplot2::margin(r = 5/2),
-      vjust = 1),
-    axis.title.y.right = ggplot2::element_text(
-      angle = -90,
-      margin = ggplot2::margin(l = 5/2),
-      vjust = 0),
-    legend.spacing = ggplot2::unit(10, "pt"),
-    legend.margin = ggplot2::margin(0, 0, 0, 0),
-    legend.key.size = ggplot2::unit(10, "pt"),
-    legend.text = ggplot2::element_text(size = ggplot2::rel(0.8)),
-    legend.title = ggplot2::element_text(hjust = 0),
-    legend.justification = c("left", "center"),
-    legend.box.margin = ggplot2::margin(0, 0, 0, 0),
-    legend.box.spacing = ggplot2::unit(10, "pt"),
-    strip.background = ggplot2::element_rect(fill = "grey80"),
-    strip.text = ggplot2::element_text(
-      size = ggplot2::rel(0.8),
-      margin = ggplot2::margin(5/2, 5/2, 5/2, 5/2)),
-    strip.text.y = ggplot2::element_text(angle = -90),
-    strip.placement = "outside",
-    strip.switch.pad.grid = ggplot2::unit(5/2, "pt"),
-    strip.switch.pad.wrap = ggplot2::unit(5/2, "pt"),
-    panel.background = ggplot2::element_blank(),
-    plot.background = ggplot2::element_blank(),
-    plot.title = ggplot2::element_text(
-      face = "bold",
-      hjust = 0,
-      vjust = 1,
-      margin = ggplot2::margin(b = 5)),
-    plot.caption = ggplot2::element_text(
-      size = ggplot2::rel(0.8),
-      hjust = 1,
-      vjust = 1,
-      margin = ggplot2::margin(t = 5)),
-    plot.tag = ggplot2::element_text(
-      face = "bold",
-      hjust = 0,
-      vjust = 0.7),
-    plot.tag.position = c(0, 1),
-    plot.margin = ggplot2::margin(5/2, 5/2, 5/2, 5/2)
-  )
-
   plot <-
     plot_data %>%
     ggplot2::ggplot(ggplot2::aes(
@@ -137,7 +68,7 @@ plot_trajectories <- function(
       fill  = color_label,
       color = color_label,
       caption = caption) +
-    custom_theme
+    custom_theme()
 
   if(save_figure){
     plot
