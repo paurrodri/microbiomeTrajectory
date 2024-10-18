@@ -12,6 +12,8 @@
 #' @import circlize
 #' @import RColorBrewer
 #' @import ComplexHeatmap
+#' @import grid
+#' @import ggplot2
 #'
 #'
 #'
@@ -24,20 +26,38 @@ plot_heatmap <- function(
   microbiome_biomarker_correlation_results,
   microbiome_on_off_comparison_results,
   biomarker_on_off_comparison_results,
-  correlation_colors     = c("#093769", "#0E539E", "#FFFFFF", "#BF1919", "#911313"),
-  correlation_breaks     = c(-1, -0.25, 0, 0.25, 1),
-  color_on_trajectory    = "#30A190",
-  color_off_trajectory   = "#E09B65",
-  color_non_significant = "#EEEEEE",
-  label_on_trajectory   = "On-trajectory",
-  label_off_trajectory  = "Off-trajectory",
-  label_non_significant = "Non-significant",
+  FDR_threshold            = 0.05,
+  correlation_colors       = c("#093769", "#0E539E", "#FFFFFF", "#BF1919", "#911313"),
+  correlation_breaks       = c(-1, -0.25, 0, 0.25, 1),
+  correlation_legend_title = "Microbiome - Biomarker correlation",
+  color_on_trajectory      = "#30A190",
+  color_off_trajectory     = "#E09B65",
+  color_non_significant    = "#EEEEEE",
+  label_on_trajectory      = "On-trajectory",
+  label_off_trajectory     = "Off-trajectory",
+  label_non_significant    = "Non-significant",
+  sidebar_legend_title     = "Group with the highest value",
+  row_title                = "Microbiome",
+  col_title                = "Biomarkers",
   save_figure = FALSE,
   figure_name = "heatmap.pdf"
 ){
 
+  # Initial checks ------
+  if (!all.equal(
+    unique(microbiome_on_off_comparison_results$Visit),
+    unique(biomarker_on_off_comparison_results$Visit)
+  )){
+    usethis::ui_stop("Visits in microbiome and biomarker data should be identical")
+  }
+  if (!all.equal(
+    unique(biomarker_on_off_comparison_results$Visit),
+    c("3 months", "6 months", "12 months", "15 months")
+  )){
+    usethis::ui_stop("Current version of function does not support other visits than 3, 6, 12, and 15 months.")
+  }
 
-  # Prepare data - central heatmap -----
+  # Prepare data for central heatmap -----
   central_data <- list()
 
   central_data[["correlation"]] <-
@@ -70,83 +90,41 @@ plot_heatmap <- function(
     tibble::column_to_rownames("Item_microbiome") %>%
     as.matrix()
 
-  # Prepare data - sidebars -----
+  column_order <- colnames(central_data[['correlation']])
+
+
+  # Prepare data for sidebars -----
   visits <- unique(microbiome_on_off_comparison_results$Visit)
   visits_recoded <- stringr::str_replace(visits, " ", "_")
-  sidebar_data <- list()
 
-  anno <- purrr:::imap(visits, function(visit, idx){
+  for (idx in seq(1, length(visits))){
+    visit         <- visits[idx]
     visit_recoded <- visits_recoded[idx]
-    sidebar_data  <- list(
+    vertical_sidebar_data  <- list(
       microbiome_on_off_comparison_results %>%
         dplyr::filter(Visit == visit) %>%
         dplyr::select(Item, Item_higher_in) %>%
         dplyr::mutate(Item_higher_in = as.character(Item_higher_in)) %>%
         tibble::column_to_rownames("Item")
     )
-    names(sidebar_data) <- visit_recoded
-    sidebar_data_name <- glue::glue('sidebar_data_{visit_recoded}')
-    assign(sidebar_data_name, sidebar_data)
+    names(vertical_sidebar_data) <- visit
+    vertical_sidebar_data_name <- glue::glue('vertical_sidebar_data_{visit_recoded}')
+    assign(vertical_sidebar_data_name, vertical_sidebar_data)
 
-
-
-
-    output <- .make_heatmap_annotation(
-      get(sidebar_data_name),
-      annotation_type = "column",
-      col = sidebar_colors,
-      pt_size = 2.5
+    horizontal_sidebar_data  <- list(
+      biomarker_on_off_comparison_results %>%
+        dplyr::filter(Visit == visit) %>%
+        dplyr::select(Item, Item_higher_in) %>%
+        dplyr::arrange(match(Item, column_order)) %>%
+        dplyr::mutate(Item_higher_in = as.character(Item_higher_in)) %>%
+        tibble::column_to_rownames("Item")
     )
+    names(horizontal_sidebar_data) <- visit
+    horizontal_sidebar_data_name <- glue::glue('horizontal_sidebar_data_{visit_recoded}')
+    assign(horizontal_sidebar_data_name, horizontal_sidebar_data)
+  }
 
-    return(output)
-
-  }) %>% purrr::list_c()
-
-  attempt_sidebar_data # get(sidebar_data_name)
-  attempt_sidebar # output
-  attempt_purrr_list # anno
-
-
-
-  vertical_sidebar_annotation_list <- purrr:::imap(visits,
-      function(visit, idx){
-
-
-
-      }) %>% purrr::list_c()
-
-
-
-
-  .make_heatmap_annotation(
-    vertical_sidebar_data_list[[1]],
-    annotation_type = "column",
-    col = sidebar_colors,
-    pt_size = 2.5
-  )
-
-
-
-
-  horizontal_sidebar_data_list <- purrr::map(
-    unique(biomarker_on_off_comparison_results$Visit),
-    function(visit){
-
-      output <- list(
-        biomarker_on_off_comparison_results %>%
-          dplyr::filter(Visit == visit) %>%
-          dplyr::select(Item, Item_higher_in) %>%
-          dplyr::mutate(Item_higher_in = as.character(Item_higher_in)) %>%
-          tibble::column_to_rownames("Item")
-      )
-      names(output) <- visit
-
-      return(output)
-
-    })
-
-
-  # Colors -----
+  # Set colors -----
   central_colors <- circlize::colorRamp2(
     correlation_breaks,
     correlation_colors,
@@ -155,119 +133,201 @@ plot_heatmap <- function(
   sidebar_colors        <- c(color_on_trajectory, color_off_trajectory, color_non_significant)
   names(sidebar_colors) <- c(label_on_trajectory, label_off_trajectory, label_non_significant)
 
-  # Sidebars -----
-
-
-  vertical_sidebar_annotation_list <-
-    purrr:::imap(
-    unique(biomarker_on_off_comparison_results$Visit),
-    function(visit, idx){
-
-
-      output <- .make_heatmap_annotation(
-        vertical_sidebar_data_list[[idx]][[visit]],
-        annotation_type = "column",
-        col = sidebar_colors,
-        pt_size = 2.5
-      )[[1]]
-
-      return(output)
-    }) %>% purrr::list_c()
-
-  vertical_sidebar_annotation_list
-  attempt_sidebar
-  attempt_sidebar_data
-  purrr::list_c(c(attempt_sidebar, attempt_sidebar))
-
-
-  right_annotation <- eval(str2expression(
-    glue::glue(
-      "ComplexHeatmap::rowAnnotation({glue::glue_collapse(glue::glue('{vertical_sidebar_annotation_list}'), sep = ', ')})"
-    )
-  ))
-
-  #
-  # attempt_sidebar_data <- list(microbiome_on_off_comparison_results %>%
-  #                                dplyr::filter(Visit == '3 months') %>%
-  #                                dplyr::select(Item, Item_higher_in) %>%
-  #                                dplyr::mutate(Item_higher_in = as.character(Item_higher_in)) %>%
-  #                                tibble::column_to_rownames("Item"))
-  # names(attempt_sidebar_data) <- '3 months'
-  # attempt_sidebar_ <-
+  # Make sidebars -----
+  vertical_sidebar_annotation <- purrr::list_c(c(
     .make_heatmap_annotation(
-    attempt_sidebar_data,
-    annotation_type = "column",
-    col = sidebar_colors,
-    pt_size = 2.5
-  )
-  .make_heatmap_annotation(
-    sidebar_data_3_months,
-    annotation_type = "column",
-    col = sidebar_colors,
-    pt_size = 2.5
-  )
-  .make_heatmap_annotation(
-    get(sidebar_data_name),
-    annotation_type = "column",
-    col = sidebar_colors,
-    pt_size = 2.5
-  )
-  #
-  # attempt_anno <- eval(str2expression(
-  #   glue::glue(
-  #     "ComplexHeatmap::rowAnnotation({glue::glue_collapse(glue::glue('{purrr::list_c(c(attempt_sidebar, attempt_sidebar))}'), sep = ', ')})"
-  #   )
-  # ))
-
-
-  # vertical_sidebar_list[[1]]
-  # attempt_sidebar
-  # purrr::list_c(c(vertical_sidebar_list))
-  # purrr::list_c(c(vertical_sidebar_annotation_list))
-  # purrr::list_c(c(attempt_sidebar, attempt_sidebar))
-  #
-  # purrr::map(vertical_sidebar_list, )
-
-
-
-  right_annotation <- eval(str2expression(
-    glue::glue(
-      "ComplexHeatmap::rowAnnotation({glue::glue_collapse(glue::glue('{purrr::list_c(c(vertical_sidebar_list[[1]], vertical_sidebar_list[[2]]}'), sep = ', ')})" # purrr::list_c(vertical_sidebar_list)
+      vertical_sidebar_data_3_months,
+      annotation_type = "row",
+      col = sidebar_colors,
+      pt_size = 2.5
+    ),
+    .make_heatmap_annotation(
+      vertical_sidebar_data_6_months,
+      annotation_type = "row",
+      col = sidebar_colors,
+      pt_size = 2.5
+    ),
+    .make_heatmap_annotation(
+      vertical_sidebar_data_12_months,
+      annotation_type = "row",
+      col = sidebar_colors,
+      pt_size = 2.5
+    ),
+    .make_heatmap_annotation(
+      vertical_sidebar_data_15_months,
+      annotation_type = "row",
+      col = sidebar_colors,
+      pt_size = 2.5
     )
   ))
 
-  horizontal_sidebar_list <- purrr:::map(
-    names(horizontal_sidebar_data_list),
-    function(name){
-      .make_heatmap_annotation(
-        horizontal_sidebar_data_list[name],
-        annotation_type = "row",
-        col = sidebar_colors,
-        pt_size = 2.5
+  vertical_sidebar <- eval(str2expression(
+    glue::glue(
+      "ComplexHeatmap::rowAnnotation({glue::glue_collapse(glue::glue('{vertical_sidebar_annotation}'), sep = ', ')})"
+    )
+  ))
+
+  horizontal_sidebar_annotation <- purrr::list_c(c(
+    .make_heatmap_annotation(
+      horizontal_sidebar_data_3_months,
+      annotation_type = "column",
+      col = sidebar_colors,
+      pt_size = 2.5
+    ),
+    .make_heatmap_annotation(
+      horizontal_sidebar_data_6_months,
+      annotation_type = "column",
+      col = sidebar_colors,
+      pt_size = 2.5
+    ),
+    .make_heatmap_annotation(
+      horizontal_sidebar_data_12_months,
+      annotation_type = "column",
+      col = sidebar_colors,
+      pt_size = 2.5
+    ),
+    .make_heatmap_annotation(
+      horizontal_sidebar_data_15_months,
+      annotation_type = "column",
+      col = sidebar_colors,
+      pt_size = 2.5
+    )
+  ))
+
+  horizontal_sidebar <- eval(str2expression(
+      glue::glue(
+        "HeatmapAnnotation(
+      {glue::glue_collapse(
+      glue::glue(
+      '{horizontal_sidebar_annotation}'),
+      sep = ', ')},
+      annotation_name_side = 'left')"
       )
-  })
+    ))
+
+  # Make legends ------
+  central_legend <- ComplexHeatmap::Legend(
+    col_fun   = central_colors,
+    title     = correlation_legend_title,
+    direction = "horizontal",
+    at        = correlation_breaks
+    )
+
+  sidebar_legend <- ComplexHeatmap::Legend(
+    labels    = names(sidebar_colors),
+    title     = sidebar_legend_title,
+    legend_gp = grid::gpar(fill = sidebar_colors),
+    nrow      = length(sidebar_colors),
+    by_row = F
+    )
+
+  all_legends <- ComplexHeatmap::packLegend(
+    central_legend,
+    sidebar_legend,
+    column_gap = ggplot2::unit(2, "mm"),
+    row_gap    = ggplot2::unit(0.5, "cm")
+  )
 
 
+  # Set aesthetics -----
+  row_title_gp    <- grid::gpar(fontsize = 15, fontface = "bold")
+  col_title_gp    <- grid::gpar(fontsize = 15, fontface = "bold")
+  row_title_rot    <- 90
+  col_title_rot    <- 0
+
+  row_names_gp    <- grid::gpar(fontsize = 13)
+  col_names_gp    <- grid::gpar(fontsize = 13)
+  row_names_rot   <- 0
+  col_names_rot   <- 45
+
+  row_labels <- rownames(central_data[['correlation']])
+  col_labels <- colnames(central_data[['correlation']])
+
+  circle_size <- 2
 
 
+  # Plot heatmap -----
+  heatmap <- ComplexHeatmap::Heatmap(
+    matrix = central_data[["correlation"]],
 
+    ## Color and layout
+    col    = central_colors,
+    na_col = "white",
+    border = TRUE,
+    width  = ggplot2::unit(6, "mm") * ncol(central_data[["correlation"]]),
+    height = ggplot2::unit(6, "mm") * nrow(central_data[["correlation"]]),
 
+    ## Labels
+    show_row_names   = TRUE,
+    row_names_gp     = row_names_gp,
+    row_labels       = row_labels,
+    row_names_rot    = row_names_rot,
+    column_names_gp  = col_names_gp,
+    column_names_rot = col_names_rot,
+    column_labels    = col_labels,
 
+    ## Titles
+    row_title        = row_title,
+    column_title     = col_title,
+    row_title_gp     = row_title_gp,
+    row_title_rot    = row_title_rot,
+    column_title_gp  = col_title_gp,
+    column_title_rot = col_title_rot,
+
+    ## Clustering
+    cluster_rows                = TRUE,
+    cluster_columns             = TRUE,
+    column_dend_height          = ggplot2::unit(2, "cm"),
+    clustering_distance_columns = "euclidean",
+    clustering_method_columns   = "ward.D2",
+    clustering_distance_rows    = "euclidean",
+    clustering_method_rows      = "ward.D2",
+
+    ## Circle on significant cells
+    cell_fun = function(j, i, x, y, width, height, fill) {
+      if(as.matrix(central_data[["p_value"]])[i, j] < 0.05) {
+        if(as.matrix(central_data[["FDR"]])[i, j] < FDR_threshold) {
+        ## If significant, add filled circle, black
+        grid.points(x, y,
+                    pch  = 16,
+                    size = ggplot2::unit(circle_size, "mm"),
+                    gp   = grid::gpar(col = "black"))
+        }  else {
+        ## If nominally-significant, add filled circle, grey
+          grid.points(x, y,
+                      pch  = 16,
+                      size = ggplot2::unit(circle_size, "mm"),
+                      gp   = grid::gpar(col = "#989994"))
+            }
+      }
+    },
+    # Sidebars
+    right_annotation    = vertical_sidebar,
+    bottom_annotation   = horizontal_sidebar,
+    show_heatmap_legend = FALSE
+  )
+
+  # Add the legends
+  heatmap <- ComplexHeatmap::draw(
+    heatmap,
+    annotation_legend_side = "left",
+    heatmap_legend_side    = "left",
+    merge_legend           = FALSE,
+    annotation_legend_list = all_legends
+  )
 
   if(save_figure){
+    width  <- 15
+    height <- 0.3 * max(nrow(central_data[['correlation']]), 40)
     heatmap
-    # ggplot2::ggsave(
-    #   filename = figure_name,
-    #   units = "cm",
-    #   height = 8,
-    #   width = 10,
-    #   scale = 1
-    # )
+    pdf(figure_name,
+        width = width,
+        height = height)
+    ComplexHeatmap::draw(ht, background = "transparent")
+    dev.off()
   }
 
-  return(plot)
-
-
+  return(heatmap)
 }
 
 
@@ -280,7 +340,6 @@ plot_heatmap <- function(
   annotation_type = "column",
   col = NULL, ...) {
 
-  # sidebar_data <- get(sidebar_data_name)
     data_type <- unlist(lapply(sidebar_data[[1]], class))
     if(any(data_type == "factor")){
       usethis::ui_stop("Please convert all the factor variables to character for the plotting")
@@ -292,7 +351,6 @@ plot_heatmap <- function(
     }
     Annot_list <- list()
 
-    # i <- extract_data
     for (i in extract_data){
       if(!is.null(names(extract_data))){
         bar_name <- names(extract_data)[stringr::str_which(extract_data, i)]
@@ -324,16 +382,13 @@ plot_heatmap <- function(
               "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_size = unit({pt_size}, 'mm'), na_col = '{na_col}')"
             )
         } else {
-          print("here once")
           Annot_list[[annot_name]] <-
             glue::glue(
               "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_size = unit({pt_size}, 'mm'), na_col = '{na_col}', col = setNames({col_palette}, {col_names}))"
             )
-          print(Annot_list[[annot_name]])
         }
 
       } else {
-        print("here is not supposed to pass")
         if(is.null(col) | length(col) < length(sidebar_data)){
           usethis::ui_stop("please provide a function to use as the color palette - one for each of the continious unique side bars you want")
         }
