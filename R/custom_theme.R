@@ -23,13 +23,13 @@ custom_theme <- function(
   theme <- ggplot2::theme(
     line = ggplot2::element_line(
       color = "black",
-      size = line_size,
+      linewidth = line_size,
       linetype = 1,
       lineend = "butt"),
     rect = ggplot2::element_rect(
       fill = NA,
       color = NA,
-      size = line_size,
+      linewidth = line_size,
       linetype = 1),
     text = ggplot2::element_text(
       family = "",
