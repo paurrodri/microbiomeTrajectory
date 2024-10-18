@@ -12,6 +12,8 @@ RoxygenNote: 7.3.2
 Imports: 
     broom,
     CATT,
+    circlize,
+    ComplexHeatmap,
     dplyr,
     effsize,
     exactRankTests,
@@ -20,10 +22,12 @@ Imports:
     ggplot2,
     ggsignif,
     glue,
+    grid,
     Kendall,
     magrittr,
     patchwork,
     purrr,
+    RColorBrewer,
     scales,
     splinectomeR,
     stringi,
@@ -31,4 +35,5 @@ Imports:
     survival,
     survminer,
     tibble,
-    tidyr
+    tidyr,
+    usethis
