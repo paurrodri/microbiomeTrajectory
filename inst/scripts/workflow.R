@@ -50,10 +50,10 @@ figure_on_off_groups_late  <- plot_on_off_trajectory_between_groups(on_off_traje
 # Microbiome taxa, metabolic biomarkers ----------------------------------------
 microbiome_trajectory_status_comparison <- compare_biome_between_on_off_trajectory(microbiome_data, on_off_trajectory_data, filter_expression_ff)
 biomarker_trajectory_status_comparison  <- compare_biome_between_on_off_trajectory(biomarker_data,  on_off_trajectory_data, filter_expression_ff)
-microbiome_biomarker_correlation        <- correlate_microbiome_biomarkers(microbiome_data, biomarker_data, metadata, filter_expression_ff_followup)
+microbiome_biomarker_correlation        <- correlate_microbiome_biomarkers(microbiome_data, biomarker_data, metadata, filter_expression_ff)
 figure_heatmap_correlation_comparison   <- plot_heatmap(microbiome_trajectory_status_comparison, biomarker_trajectory_status_comparison, microbiome_biomarker_correlation)
-figure_butyrate_on_off_trajectory       <- plot_biomarker_on_off_trajectory("Butyric acid",   biomarker_data, on_off_trajectory_data, filter_expression_ff_followup)
-figure_propionate_on_off_trajectory     <- plot_biomarker_on_off_trajectory("Propionic acid", biomarker_data, on_off_trajectory_data, filter_expression_ff_followup)
+figure_butyrate_on_off_trajectory       <- plot_biomarker_on_off_trajectory("Butyric acid",   biomarker_data, on_off_trajectory_data, filter_expression_ff)
+figure_propionate_on_off_trajectory     <- plot_biomarker_on_off_trajectory("Propionic acid", biomarker_data, on_off_trajectory_data, filter_expression_ff)
 
 
 # Clinical outcomes ------------------------------------------------------------
