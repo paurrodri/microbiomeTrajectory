@@ -16,11 +16,9 @@ subset <- "all" # all infants (HMG-CS already excluded)
 if (subset == "all"){
   filter_expression             <- TRUE # for all infants (HMG-CS already excluded)
   filter_expression_ff          <- expression(Feeding_group != "HMG") # for formula-fed infants
-  filter_expression_ff_followup <- expression(Feeding_group != "HMG" & Visit != "Baseline") # for formula-fed infants, follow-up visits
   } else if (subset == "C-section"){
   filter_expression             <- expression(Feeding_group == "HMG" | Delivery_mode == "Caesarean") # for formula-fed CS infants, AND reference HMG-VD infants
   filter_expression_ff          <- expression(Feeding_group != "HMG" & Delivery_mode == "Caesarean") # for formula-fed CS infants
-  filter_expression_ff_followup <- expression(Feeding_group != "HMG" & Delivery_mode == "Caesarean" & Visit != "Baseline") # for formula-fed CS infants, follow-up visits
 }
 
 # Read input data --------------------------------------------------------------
@@ -52,7 +50,8 @@ figure_on_off_groups_late  <- plot_on_off_trajectory_between_groups(on_off_traje
 # Microbiome taxa, metabolic biomarkers ----------------------------------------
 microbiome_trajectory_status_comparison <- compare_biome_between_on_off_trajectory(microbiome_data, on_off_trajectory_data, filter_expression_ff)
 biomarker_trajectory_status_comparison  <- compare_biome_between_on_off_trajectory(biomarker_data,  on_off_trajectory_data, filter_expression_ff)
-microbiome_biomarker_correlation        <- correlate_microbiome_biomarkers(microbiome_data, biomarker_data, metadata, filter_expression_ff)
+microbiome_biomarker_correlation        <- correlate_microbiome_biomarkers(microbiome_data, biomarker_data, metadata, filter_expression_ff_followup)
+figure_heatmap_correlation_comparison   <- plot_heatmap(microbiome_trajectory_status_comparison, biomarker_trajectory_status_comparison, microbiome_biomarker_correlation)
 figure_butyrate_on_off_trajectory       <- plot_biomarker_on_off_trajectory("Butyric acid",   biomarker_data, on_off_trajectory_data, filter_expression_ff_followup)
 figure_propionate_on_off_trajectory     <- plot_biomarker_on_off_trajectory("Propionic acid", biomarker_data, on_off_trajectory_data, filter_expression_ff_followup)
 

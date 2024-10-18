@@ -21,6 +21,7 @@ plot_biomarker_on_off_trajectory <- function(
   biomarker_data,
   on_off_trajectory_data,
   filter_expression    = expression(Feeding_group != "HMG"),
+  filter_visit_expression = expression(Visit %in% c("3 months", "6 months", "12 months", "15 months")),
   add_units_string     = TRUE, # "umol/g wet feces" for OrgAcids, "mg/g dry feces" for A1AT, "mg/kg dry feces" for IgA and CP
   color_on_trajectory  = "#30A190",
   color_off_trajectory = "#E09B65",
@@ -62,6 +63,7 @@ plot_biomarker_on_off_trajectory <- function(
     dplyr::select(Sample_ID, !!dplyr::sym(biomarker)) %>%
     dplyr::left_join(on_off_trajectory_data, by = "Sample_ID") %>%
     dplyr::filter(eval(filter_expression)) %>%
+    dplyr::filter(eval(filter_visit_expression)) %>%
     dplyr::filter(!is.na(!!dplyr::sym(biomarker))) %>%
     dplyr::mutate(
       Visit = factor(Visit, levels = visit_levels),
