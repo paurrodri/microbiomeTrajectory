@@ -196,7 +196,7 @@ plot_heatmap <- function(
 
   horizontal_sidebar <- eval(str2expression(
       glue::glue(
-        "HeatmapAnnotation(
+        "ComplexHeatmap::HeatmapAnnotation(
       {glue::glue_collapse(
       glue::glue(
       '{horizontal_sidebar_annotation}'),
@@ -288,13 +288,13 @@ plot_heatmap <- function(
       if(as.matrix(central_data[["p_value"]])[i, j] < 0.05) {
         if(as.matrix(central_data[["FDR"]])[i, j] < FDR_threshold) {
         ## If significant, add filled circle, black
-        grid.points(x, y,
+        grid::grid.points(x, y,
                     pch  = 16,
                     size = ggplot2::unit(circle_size, "mm"),
                     gp   = grid::gpar(col = "black"))
         }  else {
         ## If nominally-significant, add filled circle, grey
-          grid.points(x, y,
+          grid::grid.points(x, y,
                       pch  = 16,
                       size = ggplot2::unit(circle_size, "mm"),
                       gp   = grid::gpar(col = "#989994"))
@@ -379,12 +379,12 @@ plot_heatmap <- function(
         if(length(col[col_categories]) == 0){
           Annot_list[[annot_name]] <-
             glue::glue(
-              "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_size = unit({pt_size}, 'mm'), na_col = '{na_col}')"
+              "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_size = ggplot2::unit({pt_size}, 'mm'), na_col = '{na_col}')"
             )
         } else {
           Annot_list[[annot_name]] <-
             glue::glue(
-              "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_size = unit({pt_size}, 'mm'), na_col = '{na_col}', col = setNames({col_palette}, {col_names}))"
+              "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_size = ggplot2::unit({pt_size}, 'mm'), na_col = '{na_col}', col = setNames({col_palette}, {col_names}))"
             )
         }
 
@@ -399,7 +399,7 @@ plot_heatmap <- function(
 
         Annot_list[[annot_name]] <-
           glue::glue(
-            "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_gp = gpar(col = {annot_pch_col}), pt_size = unit({pt_size}, 'mm'), na_col = '{na_col}', col = {substitute(col)}[['{i}']])"
+            "'{bar_name}' = ComplexHeatmap::anno_simple(x = {annot_data}, pch = {annot_pch}, pt_gp = gpar(col = {annot_pch_col}), pt_size = ggplot2::unit({pt_size}, 'mm'), na_col = '{na_col}', col = {substitute(col)}[['{i}']])"
           )
       }
 
