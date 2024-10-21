@@ -103,6 +103,11 @@ plot_heatmap <- function(
     vertical_sidebar_data  <- list(
       microbiome_on_off_comparison_results %>%
         dplyr::filter(Visit == visit) %>%
+        # Re-calculate "group Item is higher in" based on FDR threshold
+        dplyr::mutate(Item_higher_in = dplyr::case_when(
+          FDR < FDR_threshold  ~ Item_higher_in,
+          FDR < 1 ~ "Non-significant"
+        )) %>%
         dplyr::select(Item, Item_higher_in) %>%
         dplyr::mutate(Item_higher_in = as.character(Item_higher_in)) %>%
         tibble::column_to_rownames("Item")
@@ -114,6 +119,11 @@ plot_heatmap <- function(
     horizontal_sidebar_data  <- list(
       biomarker_on_off_comparison_results %>%
         dplyr::filter(Visit == visit) %>%
+        # Re-calculate "group Item is higher in" based on FDR threshold
+        dplyr::mutate(Item_higher_in = dplyr::case_when(
+          FDR < FDR_threshold  ~ Item_higher_in,
+          FDR < 1 ~ "Non-significant"
+        )) %>%
         dplyr::select(Item, Item_higher_in) %>%
         dplyr::arrange(match(Item, column_order)) %>%
         dplyr::mutate(Item_higher_in = as.character(Item_higher_in)) %>%
@@ -287,18 +297,12 @@ plot_heatmap <- function(
     cell_fun = function(j, i, x, y, width, height, fill) {
       if(as.matrix(central_data[["p_value"]])[i, j] < 0.05) {
         if(as.matrix(central_data[["FDR"]])[i, j] < FDR_threshold) {
-        ## If significant, add filled circle, black
+        ## If (FDR) significant, add filled circle, black
         grid::grid.points(x, y,
                     pch  = 16,
                     size = ggplot2::unit(circle_size, "mm"),
                     gp   = grid::gpar(col = "black"))
-        }  else {
-        ## If nominally-significant, add filled circle, grey
-          grid::grid.points(x, y,
-                      pch  = 16,
-                      size = ggplot2::unit(circle_size, "mm"),
-                      gp   = grid::gpar(col = "#989994"))
-            }
+        }
       }
     },
     # Sidebars
