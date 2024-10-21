@@ -64,8 +64,8 @@ figure_propionate_on_off_trajectory     <- plot_biomarker_on_off_trajectory("Pro
 # Clinical outcomes ------------------------------------------------------------
 figure_kaplan_meier_antibiotics   <- plot_kaplan_meier(antibiotics_data, on_off_trajectory_data, filter_expression_ff) # Figure from Main
 figure_kaplan_meier_rti_mild      <- plot_kaplan_meier(rti_mild_data,    on_off_trajectory_data, filter_expression_ff) # Figure from Main
-figures_kaplan_meier_antibiotics  <- plot_kaplan_meier_all_combinations(antibiotics_data, event, on_off_trajectory_data, filter_expression_ff) # All 3 figures (Main and Extended)
-figures_kaplan_meier_rti_mild     <- plot_kaplan_meier_all_combinations(rti_mild_data,    event, on_off_trajectory_data, filter_expression_ff) # All 3 figures (Main and Extended)
+figures_kaplan_meier_antibiotics  <- plot_kaplan_meier_all_combinations(antibiotics_data, "antibiotics", on_off_trajectory_data, filter_expression_ff) # All 3 figures (Main and Extended)
+figures_kaplan_meier_rti_mild     <- plot_kaplan_meier_all_combinations(rti_mild_data,    "rti_mild", on_off_trajectory_data, filter_expression_ff) # All 3 figures (Main and Extended)
 cox_ph_results_antibiotics        <- perform_cox_ph_test_all_combinations(antibiotics_data, on_off_trajectory_data, filter_expression_ff)
 cox_ph_results_rti_mild           <- perform_cox_ph_test_all_combinations(rti_mild_data,    on_off_trajectory_data, filter_expression_ff)
 figure_cox_ph_antibiotics         <- plot_forest_plot_cox_ph(cox_ph_results_antibiotics)
