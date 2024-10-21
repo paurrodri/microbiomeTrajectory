@@ -27,12 +27,14 @@ if (model == "genus10"){
 }
 
 # Read input data --------------------------------------------------------------
-microbiota_age_data <- readRDS(glue::glue("../data/microbiota_age_{model}.rds"))
-microbiome_data     <- readRDS(glue::glue("../data/{model}.rds"))
-biomarker_data      <- readRDS(glue::glue("../data/biomarker.rds"))
-antibiotics_data    <- readRDS(glue::glue("../data/antibiotics.rds"))
-rti_mild_data       <- readRDS(glue::glue("../data/rti_mild.rds"))
-metadata            <- readRDS(glue::glue("../data/metadata.rds"))
+microbiota_age_data    <- readRDS(glue::glue("../data/microbiota_age_{model}.rds"))
+shap_data              <- readRDS(glue::glue("../data/shap_{model}.rds"))
+model_performance_data <- readRDS(glue::glue("../data/age_predictor_performance_metrics.rds"))
+microbiome_data        <- readRDS(glue::glue("../data/{model}.rds"))
+biomarker_data         <- readRDS(glue::glue("../data/biomarker.rds"))
+antibiotics_data       <- readRDS(glue::glue("../data/antibiotics.rds"))
+rti_mild_data          <- readRDS(glue::glue("../data/rti_mild.rds"))
+metadata               <- readRDS(glue::glue("../data/metadata.rds"))
 
 
 # Calculate MAZ and trajectory status ------------------------------------------
@@ -42,9 +44,13 @@ figure_maz             <- plot_maz(maz_data, filter_expression)
 
 
 # Microbiota trajectories  -----------------------------------------------------
-figure_trajectories <- plot_trajectories(microbiota_age_data, filter_expression)
-figure_pvals        <- compare_trajectories_between_groups(microbiota_age_data, filter_expression)
+figure_reference_trajectory <- plot_reference_trajectory(microbiota_age_data)
+figure_trajectories         <- plot_trajectories(microbiota_age_data, filter_expression)
+figure_pvals                <- compare_trajectories_between_groups(microbiota_age_data, filter_expression)
 
+
+# Model performance and SHAP ----------------------------------------------
+figure_shap <- plot_shap_values(shap_data, model_performance_data, model)
 
 # On/off-trajectory vs feeding group comparison  -------------------------------
 on_off_trend_test_results  <- compare_on_off_trajectory_between_groups_all_combinations(on_off_trajectory_data, filter_expression)
