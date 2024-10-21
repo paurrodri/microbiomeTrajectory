@@ -9,6 +9,8 @@ plot_biomarker_on_off_trajectory(
   biomarker_data,
   on_off_trajectory_data,
   filter_expression = expression(Feeding_group != "HMG"),
+  filter_visit_expression = expression(Visit \%in\% c("3 months", "6 months",
+    "12 months", "15 months")),
   add_units_string = TRUE,
   color_on_trajectory = "#30A190",
   color_off_trajectory = "#E09B65",
