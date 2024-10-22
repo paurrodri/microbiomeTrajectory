@@ -2,11 +2,10 @@
 
 **R package to analyse microbiota age trajectories**
 
-Includes:
-- Inferring, visualization, and comparison of microbiota age trajectories
+- Inference, visualization, and comparison of microbiota age trajectories
 - Calculation and visualization of Microbiota-for-age Z-scores (MAZ) 
 - Definition and comparison of on- and off-trajectory microbiome samples
-- Associations between microbiota, metabolic biomarkers, and on- and off-trajectory groups
+- Associations between microbiome, metabolic biomarkers, and on- and off-trajectory groups
 - Visualization of adverse events and comparison between on- and off-trajectory groups
 
 
