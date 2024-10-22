@@ -18,5 +18,5 @@ devtools::install_github('paurrodri/microbiomeTrajectory')
 See script `inst/scripts/workflow.R` for an overview of our pipeline.
 
 ### Authors
-Paula Rodríguez-García (@paurrodri)
-- Special thanks to Maria Novolosov (@marianovolosov) for her contributions on the integrative heatmap code.
+Paula Rodríguez-García ([@paurrodri](https://github.com/paurrodri))
+- Special thanks to Maria Novolosov ([@marianovolosov](https://github.com/marianovosolov)) for her contributions on the integrative heatmap code.
